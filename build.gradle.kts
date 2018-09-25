@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.2.70"
-    kotlin("plugin.scripting") version "1.2.70"
+    kotlin("jvm") version "1.3.0-rc-57"
+    kotlin("plugin.scripting") version "1.3.0-rc-57"
 }
 
 group = "br.com.devsrsouza"
@@ -12,6 +12,7 @@ version = "1.0-SNAPSHOT"
 repositories {
     jcenter()
     maven { url = uri("https://dl.bintray.com/kotlin/ktor") }
+    maven { url = uri("https://dl.bintray.com/kotlin/kotlin-eap") }
 }
 
 dependencies {

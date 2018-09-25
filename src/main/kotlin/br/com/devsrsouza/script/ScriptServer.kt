@@ -42,7 +42,7 @@ class ScriptServer {
 
     fun registerScriptRoute(scriptRoute: ScriptRoute) {
         scriptRoutes.add(scriptRoute)
-        route.get("/$scriptRoute.route") {
+        route.get(scriptRoute.route) {
             call.respondHtmlTemplate(scriptRoute.script) {}
         }
     }
