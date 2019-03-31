@@ -1,42 +1,24 @@
-import org.jetbrains.kotlin.gradle.dsl.Coroutines
+import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.3.0-rc-57"
-    kotlin("plugin.scripting") version "1.3.0-rc-57"
+    kotlin("jvm") version "1.3.21"
 }
+
+val kotlin_version by extra(plugins.getPlugin(KotlinPluginWrapper::class.java).kotlinPluginVersion)
+val ktor_version by extra("1.1.3")
 
 group = "br.com.devsrsouza"
-version = "1.0-SNAPSHOT"
+version = "0.0.1-SNAPSHOT"
 
-repositories {
-    jcenter()
-    maven { url = uri("https://dl.bintray.com/kotlin/ktor") }
-    maven { url = uri("https://dl.bintray.com/kotlin/kotlin-eap") }
-}
+subprojects {
+    plugins.apply("org.jetbrains.kotlin.jvm")
 
-dependencies {
-    val ktor_version = "0.9.4"
-    val kx_html_version = "0.6.10"
-    compile(kotlin("stdlib-jdk8"))
-    compile("org.jetbrains.kotlinx:kotlinx-html-jvm:$kx_html_version")
-    compile("io.ktor:ktor-server-netty:$ktor_version")
-    compile("io.ktor:ktor-server-core:$ktor_version")
-    compile("io.ktor:ktor-html-builder:$ktor_version")
+    repositories {
+        jcenter()
+    }
 
-    //SCRIPT
-    compile(kotlin("scripting-common"))
-    compile(kotlin("scripting-jvm"))
-    compile(kotlin("scripting-jvm-host"))
-    compile(kotlin("scripting-misc"))
-    compile(kotlin("scripting-compiler-embeddable"))
-    compile(kotlin("compiler"))
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-kotlin {
-    experimental.coroutines = Coroutines.ENABLE
+    tasks.withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
+    }
 }

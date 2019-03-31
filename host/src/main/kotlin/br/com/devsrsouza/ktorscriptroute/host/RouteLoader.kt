@@ -1,15 +1,15 @@
-package br.com.devsrsouza.script
+package br.com.devsrsouza.ktorscriptroute.host
 
+import br.com.devsrsouza.ktorscriptroute.script.ComponentScript
+import br.com.devsrsouza.ktorscriptroute.script.ScriptTemplate
+import br.com.devsrsouza.ktorscriptroute.script.scriptExtension
 import java.io.File
 import java.lang.RuntimeException
-import java.net.URLClassLoader
 import kotlin.reflect.full.primaryConstructor
 import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.api.resultOrNull
 import kotlin.script.experimental.host.toScriptSource
-import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
-import kotlin.script.experimental.jvmhost.JvmScriptCompiler
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
 
 suspend fun load(server: ScriptServer) {
@@ -25,7 +25,7 @@ suspend fun load(server: ScriptServer) {
     //server.log.info("Creating a script host")
     println("Creating a script host")
 
-    for (file in routePath.walkTopDown().filter { it.name.endsWith("html.kts") }) {
+    for (file in routePath.walkTopDown().filter { it.name.endsWith(".$scriptExtension") }) {
         val route = file.absolutePath.removePrefix(routePath.absolutePath)
                 .removeSuffix(".$scriptExtension")
         routes.put(route, file.toScriptSource())

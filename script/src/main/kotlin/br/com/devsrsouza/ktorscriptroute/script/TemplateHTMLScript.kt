@@ -1,7 +1,7 @@
-package br.com.devsrsouza.script
+package br.com.devsrsouza.ktorscriptroute.script
 
 import io.ktor.html.Template
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import kotlinx.html.HTML
 import java.io.File
 import kotlin.script.experimental.annotations.KotlinScript

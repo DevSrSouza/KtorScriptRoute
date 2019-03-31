@@ -1,16 +1,17 @@
-package br.com.devsrsouza.script
+package br.com.devsrsouza.ktorscriptroute.host
 
+import br.com.devsrsouza.ktorscriptroute.script.ScriptTemplate
 import io.ktor.application.*
 import io.ktor.html.respondHtmlTemplate
 import io.ktor.routing.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 
 class ScriptRoute(val route: String, val script: ScriptTemplate)
 
-fun main(args: Array<String>) {
+fun main() {
     val server = ScriptServer()
 }
 
