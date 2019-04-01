@@ -1,6 +1,5 @@
 package br.com.devsrsouza.ktorscriptroute.host
 
-import br.com.devsrsouza.ktorscriptroute.script.ScriptTemplate
 import io.ktor.application.*
 import io.ktor.html.respondHtmlTemplate
 import io.ktor.routing.*
@@ -9,7 +8,7 @@ import io.ktor.server.netty.Netty
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 
-class ScriptRoute(val route: String, val script: ScriptTemplate)
+class ScriptRoute(val route: String, val builder: RouteBuilder)
 
 fun main() {
     val server = ScriptServer()
@@ -37,14 +36,14 @@ class ScriptServer {
         }
     }
 
-    fun registerScriptRoute(route: String, script: ScriptTemplate) {
-        registerScriptRoute(ScriptRoute(route, script))
+    fun registerScriptRoute(route: String, builder: RouteBuilder) {
+        registerScriptRoute(ScriptRoute(route, builder))
     }
 
     fun registerScriptRoute(scriptRoute: ScriptRoute) {
         scriptRoutes.add(scriptRoute)
         route.get(scriptRoute.route) {
-            call.respondHtmlTemplate(scriptRoute.script) {}
+            scriptRoute.builder(call)
         }
     }
 }

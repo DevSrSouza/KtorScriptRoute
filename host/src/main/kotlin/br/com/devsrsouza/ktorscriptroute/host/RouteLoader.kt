@@ -1,8 +1,8 @@
 package br.com.devsrsouza.ktorscriptroute.host
 
-import br.com.devsrsouza.ktorscriptroute.script.ComponentScript
-import br.com.devsrsouza.ktorscriptroute.script.ScriptTemplate
+import br.com.devsrsouza.ktorscriptroute.script.KtorScript
 import br.com.devsrsouza.ktorscriptroute.script.scriptExtension
+import io.ktor.application.ApplicationCall
 import java.io.File
 import java.lang.RuntimeException
 import kotlin.reflect.full.primaryConstructor
@@ -12,6 +12,8 @@ import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
 
+typealias RouteBuilder = suspend (ApplicationCall) -> KtorScript
+
 suspend fun load(server: ScriptServer) {
     println("Starting load scripts")
 
@@ -19,7 +21,7 @@ suspend fun load(server: ScriptServer) {
 
     val routes: MutableMap<String, SourceCode> = mutableMapOf()
 
-    val configuration = createJvmCompilationConfigurationFromTemplate<ComponentScript>()
+    val configuration = createJvmCompilationConfigurationFromTemplate<KtorScript>()
 
     val host = BasicJvmScriptingHost()
     //server.log.info("Creating a script host")
@@ -39,18 +41,18 @@ suspend fun load(server: ScriptServer) {
         val rwd = host.compiler.invoke(source, configuration)
         val result = rwd.resultOrNull()
         if (result != null) {
-            server.registerScriptRoute(route, ScriptTemplate {
+            server.registerScriptRoute(route) { call ->
                 val kclass = result.getClass(null)
                 val constr = kclass.resultOrNull()?.primaryConstructor
-                return@ScriptTemplate if(constr != null) {
-                    constr.call(it) as ComponentScript
+                return@registerScriptRoute if(constr != null) {
+                    constr.call(call.request, call.response) as KtorScript
                 } else {
                     for (report in kclass.reports) {
                         report.exception?.printStackTrace()
                     }
                     throw RuntimeException()
                 }
-            })
+            }
             //server.log.info("$route loaded")
             println("$route loaded")
         } else {
