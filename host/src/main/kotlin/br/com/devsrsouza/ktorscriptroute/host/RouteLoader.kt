@@ -3,7 +3,6 @@ package br.com.devsrsouza.ktorscriptroute.host
 import br.com.devsrsouza.ktorscriptroute.script.KtorScript
 import br.com.devsrsouza.ktorscriptroute.script.scriptExtension
 import io.ktor.application.ApplicationCall
-import java.io.File
 import java.lang.RuntimeException
 import kotlin.reflect.full.primaryConstructor
 import kotlin.script.experimental.api.SourceCode
@@ -14,10 +13,10 @@ import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromT
 
 typealias RouteBuilder = suspend (ApplicationCall) -> KtorScript
 
-suspend fun load(server: ScriptServer) {
+suspend fun KtorScriptRoute.loadScripts() {
     println("Starting load scripts")
 
-    val routePath = File("route/").apply { if (!exists()) mkdirs() }
+    val routeFolder = scriptFolder.apply { if (!exists()) mkdirs() }
 
     val routes: MutableMap<String, SourceCode> = mutableMapOf()
 
@@ -27,8 +26,8 @@ suspend fun load(server: ScriptServer) {
     //server.log.info("Creating a script host")
     println("Creating a script host")
 
-    for (file in routePath.walkTopDown().filter { it.name.endsWith(".$scriptExtension") }) {
-        val route = file.absolutePath.removePrefix(routePath.absolutePath)
+    for (file in routeFolder.walkTopDown().filter { it.name.endsWith(".$scriptExtension") }) {
+        val route = file.absolutePath.removePrefix(routeFolder.absolutePath)
                 .removeSuffix(".$scriptExtension")
         routes.put(route, file.toScriptSource())
         //server.log.info("Route '$route' finded")
@@ -41,10 +40,10 @@ suspend fun load(server: ScriptServer) {
         val rwd = host.compiler.invoke(source, configuration)
         val result = rwd.resultOrNull()
         if (result != null) {
-            server.registerScriptRoute(route) { call ->
+            scripts.add(ScriptRoute(route) { call ->
                 val kclass = result.getClass(null)
                 val constr = kclass.resultOrNull()?.primaryConstructor
-                return@registerScriptRoute if(constr != null) {
+                return@ScriptRoute if(constr != null) {
                     constr.call(call.request, call.response) as KtorScript
                 } else {
                     for (report in kclass.reports) {
@@ -52,7 +51,7 @@ suspend fun load(server: ScriptServer) {
                     }
                     throw RuntimeException()
                 }
-            }
+            })
             //server.log.info("$route loaded")
             println("$route loaded")
         } else {
