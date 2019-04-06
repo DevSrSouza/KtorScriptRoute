@@ -5,6 +5,7 @@ import br.com.devsrsouza.ktorscriptroute.script.scriptExtension
 import io.ktor.application.ApplicationCall
 import java.lang.RuntimeException
 import kotlin.reflect.full.primaryConstructor
+import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.api.resultOrNull
 import kotlin.script.experimental.host.toScriptSource
@@ -44,20 +45,30 @@ suspend fun KtorScriptRoute.loadScripts() {
                 val kclass = result.getClass(null)
                 val constr = kclass.resultOrNull()?.primaryConstructor
                 return@ScriptRoute if(constr != null) {
-                    constr.call(call.request, call.response) as KtorScript
+                    constr.call(call) as KtorScript
                 } else {
-                    for (report in kclass.reports) {
-                        report.exception?.printStackTrace()
-                    }
+                    printReports(kclass.reports)
                     throw RuntimeException()
                 }
             })
             //server.log.info("$route loaded")
             println("$route loaded")
         } else {
-            rwd.reports.forEach {
-                println(it.message)
-            }
+            printReports(rwd.reports)
         }
+    }
+}
+
+fun printReports(reports: List<ScriptDiagnostic>) {
+    for (diag in reports) {
+        val file = diag.sourcePath
+        val line = diag.location?.start?.line
+        val column = diag.location?.start?.col
+        val sourceLocation = if(file != null && line != null)
+            "$file(line: $line ${if(column != null) ", column: $column" else ""})"
+        else ""
+        val message = diag.severity.toString() + ": $sourceLocation" + diag.message
+        println(message)
+        diag.exception?.printStackTrace()
     }
 }

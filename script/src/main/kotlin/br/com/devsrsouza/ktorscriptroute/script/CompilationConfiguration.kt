@@ -7,7 +7,7 @@ import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.util.classpathFromClassloader
 
 object KtorRouteCompilationConfiguration : ScriptCompilationConfiguration({
-    defaultImports(ktorImports + ktorHtmlImports + kotlinxHtmlImrpots)
+    defaultImports(ktorImports + coroutinesImports + ktorHtmlImports + kotlinxHtmlImrpots)
     dependencies(
             classpathFromClassloader(KtorRouteCompilationConfiguration::class.java.classLoader)
                     ?.apply { forEach { println(it) } }

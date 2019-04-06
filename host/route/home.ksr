@@ -1,0 +1,10 @@
+call.respondHtml(HttpStatusCode.OK) {
+    head {
+        title("Homeeee")
+    }
+    body {
+        div {
+            h1 { +"Your Ip Andress: ${request.local.remoteHost}" }
+        }
+    }
+}

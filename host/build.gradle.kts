@@ -1,3 +1,7 @@
+plugins {
+    application
+}
+
 val ktor_version = rootProject.ext["ktor_version"]
 
 dependencies {
@@ -10,4 +14,8 @@ dependencies {
     compile(kotlin("scripting-jvm-host"))
     compile(kotlin("scripting-compiler-embeddable"))
     compile(kotlin("compiler"))
+}
+
+application {
+    mainClassName = "br.com.devsrsouza.ktorscriptroute.host.ScriptServerKt"
 }
